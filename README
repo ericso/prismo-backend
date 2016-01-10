@@ -1,0 +1,58 @@
+Prismo API backend. This is built using the Flask python web framework and the
+Flask-Restful library.
+
+
+Clone this repo
+
+  git clone git@github.com:ericso/prismo-backend.git
+
+Create a python virtual environment, or don't, but it's recommended.
+Use virtualenvwrapper:
+
+https://virtualenvwrapper.readthedocs.org/en/latest/
+
+  mkvirtualenv <name-of-virtualenv>
+
+Install the requirements
+
+  pip install -r requirements.txt
+
+Create the database
+
+  python db_create.py
+
+Run the tests
+
+  nosetests
+
+Run the app
+
+  python main.py
+
+
+Usage:
+The API is being served on localhost on port 5000.
+
+Create a user by posting to /users with username and password in JSON format
+
+  curl -i -X POST -H "Content-Type: application/json" -d \
+  '{"username":"test_user","password":"test_password"}' \
+  http://127.0.0.1:5000/api/v0/users
+
+Get a token by sending username/password using HTTP Basic authorization to /token
+
+  curl -u <test_user>:<test_password> -i -X GET http://127.0.0.1:5000/api/v0/token
+
+Cache token on client and send token in username field (Basic auth) on GET
+requests to resource. The password field is unused. Token default expiration is
+10 minutes; when request fails due to auth, get another token.
+
+  curl -u <token_value>:"unused" -i -X GET http://127.0.0.1:5000/api/v0/users
+
+Get a user with username/password
+
+  curl -u <test_user>:<test_password> -i -X GET http://127.0.0.1:5000/api/v0/users
+  curl -u <token_value>:"unused" -i -X GET http://127.0.0.1:5000/api/v0/users
+
+
+See API documentation for more details.

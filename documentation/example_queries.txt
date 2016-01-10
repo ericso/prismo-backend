@@ -1,0 +1,15 @@
+
+# Register a user
+$ curl -i -X POST -H "Content-Type: application/json" -d \
+  '{"username":"test_user","password":"test_password"}' \
+  http://127.0.0.1:5000/api/v0/users
+
+# Get a resource with username/password
+$ curl -u test_user:test_password -i -X GET http://127.0.0.1:5000/api/v0/resource
+
+# Get an auth token
+$ curl -u test_user:test_password -i -X GET http://127.0.0.1:5000/api/v0/token
+
+# Get resource using retrieved token, token value is sent in username field,
+# password is unused so can be anything
+$ curl -u token_value:unused -i -X GET http://127.0.0.1:5000/api/v0/resource

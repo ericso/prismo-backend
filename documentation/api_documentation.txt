@@ -1,0 +1,69 @@
+API PREFIX
+/api/v0
+
+ENDPOINTS
+Authentication
+GET     /token  send username/password using basic auth, get auth token
+
+Users
+GET     /users  Retrieves a list of users
+POST    /users  Creates a new user with username/password
+GET     /users/:username  Retrieves the user with username
+PUT     /users/:username  Updates user with payload
+DELETE  /users/:username  Deletes a user (admin only)
+
+Note: for routes with :username, the object :id is valid input
+
+
+Authorization flow:
+1. Create a user by posting to /users with username and password in JSON format
+
+  $ curl -i -X POST -H "Content-Type: application/json" -d \
+    '{"username":"test_user","password":"test_password"}' \
+    http://127.0.0.1:5000/api/v0/users
+
+  JSON Response:
+  {
+    "user": {
+      "uri": "/api/v0/users/0",
+      "username": "test_user"
+    }
+  }
+
+2. Get a token by sending username/password using HTTP Basic authorization to
+   the endpoint /token
+
+  $ curl -u <test_user>:<test_password> -i -X GET \
+    http://127.0.0.1:5000/api/v0/token
+
+
+3. Cache token on client and send token in username field (Basic auth) on GET
+   requests to users resource
+
+  $ curl -u <test_user>:<test_password> -i -X GET \
+    http://127.0.0.1:5000/api/v0/users
+  $ curl -u <token_value>:"unused" -i -X GET http://127.0.0.1:5000/api/v0/users
+
+Token default expiration is 10 minutes; when request fails due to auth, get
+another token.
+
+Run the tests:
+$ nosetests
+
+to run a single test controller:
+nosetests app.tests.test_filename:TestControllerClassName
+
+to run a single test method:
+$ nosetests app_name.tests.test_filename:TestControllerClassName.test_method_name
+(e.g.: nosetests api.tests.test_users:UsersTest.test_update_user_password)
+
+for code coverage:
+$ nosetests --with-coverage --cover-package=app
+
+to test CORS headers:
+$ curl -i -X POST -H "Content-Type: application/json" -H \
+  "Origin: http://example.com" -d \
+  '{"username": "test_user_1", "password": "test_password"}' \
+  http://127.0.0.1:5000/api/v0/users
+
+You should see header "Access-Control-Allow-Origin: http://example.com"
